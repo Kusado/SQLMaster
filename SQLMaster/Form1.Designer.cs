@@ -24,11 +24,14 @@
     /// </summary>
     private void InitializeComponent() {
       this.components = new System.ComponentModel.Container();
+      DevExpress.XtraGrid.GridFormatRule gridFormatRule1 = new DevExpress.XtraGrid.GridFormatRule();
+      DevExpress.XtraEditors.FormatConditionRuleExpression formatConditionRuleExpression1 = new DevExpress.XtraEditors.FormatConditionRuleExpression();
+      DevExpress.XtraGrid.GridFormatRule gridFormatRule2 = new DevExpress.XtraGrid.GridFormatRule();
+      DevExpress.XtraEditors.FormatConditionRuleExpression formatConditionRuleExpression2 = new DevExpress.XtraEditors.FormatConditionRuleExpression();
       DevExpress.XtraGrid.GridFormatRule gridFormatRule3 = new DevExpress.XtraGrid.GridFormatRule();
       DevExpress.XtraEditors.FormatConditionRuleExpression formatConditionRuleExpression3 = new DevExpress.XtraEditors.FormatConditionRuleExpression();
-      DevExpress.XtraGrid.GridFormatRule gridFormatRule4 = new DevExpress.XtraGrid.GridFormatRule();
-      DevExpress.XtraEditors.FormatConditionRuleExpression formatConditionRuleExpression4 = new DevExpress.XtraEditors.FormatConditionRuleExpression();
       this.colServiceStatus = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colInfo = new DevExpress.XtraGrid.Columns.GridColumn();
       this.gridControl1 = new DevExpress.XtraGrid.GridControl();
       this.sqlInstanceBindingSource = new System.Windows.Forms.BindingSource(this.components);
       this.gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
@@ -39,13 +42,13 @@
       this.colServerMemoryRunning = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colServerMemoryMax = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colDatabasesSize = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.colInfo = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colDescription = new DevExpress.XtraGrid.Columns.GridColumn();
       this.buttonExit = new System.Windows.Forms.Button();
       this.buttonRefresh = new System.Windows.Forms.Button();
       this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.toolStripMenuItemStart = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripMenuItemStop = new System.Windows.Forms.ToolStripMenuItem();
+      this.connectSMSSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.buttonSave = new System.Windows.Forms.Button();
       this.buttonLoad = new System.Windows.Forms.Button();
       this.buttonGetNetwork = new System.Windows.Forms.Button();
@@ -63,10 +66,18 @@
       this.colServiceStatus.Visible = true;
       this.colServiceStatus.VisibleIndex = 9;
       // 
+      // colInfo
+      // 
+      this.colInfo.FieldName = "Info";
+      this.colInfo.Name = "colInfo";
+      this.colInfo.OptionsColumn.AllowEdit = false;
+      this.colInfo.Visible = true;
+      this.colInfo.VisibleIndex = 7;
+      // 
       // gridControl1
       // 
-      this.gridControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+      this.gridControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.gridControl1.DataSource = this.sqlInstanceBindingSource;
       this.gridControl1.EmbeddedNavigator.TextLocation = DevExpress.XtraEditors.NavigatorButtonsTextLocation.End;
@@ -78,6 +89,7 @@
       this.gridControl1.UseEmbeddedNavigator = true;
       this.gridControl1.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridView1});
+      this.gridControl1.DoubleClick += new System.EventHandler(this.gridControl1_DoubleClick);
       // 
       // sqlInstanceBindingSource
       // 
@@ -96,24 +108,33 @@
             this.colInfo,
             this.colDescription,
             this.colServiceStatus});
+      gridFormatRule1.ApplyToRow = true;
+      gridFormatRule1.Column = this.colServiceStatus;
+      gridFormatRule1.Name = "FormatServiceStatusRunning";
+      formatConditionRuleExpression1.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+      formatConditionRuleExpression1.Appearance.BackColor2 = System.Drawing.Color.White;
+      formatConditionRuleExpression1.Appearance.Options.UseBackColor = true;
+      formatConditionRuleExpression1.Expression = "[ServiceStatus] = \'Running\'";
+      gridFormatRule1.Rule = formatConditionRuleExpression1;
+      gridFormatRule2.ApplyToRow = true;
+      gridFormatRule2.Column = this.colServiceStatus;
+      gridFormatRule2.Name = "FormatServiceStatusStopped";
+      formatConditionRuleExpression2.Appearance.BackColor = System.Drawing.Color.White;
+      formatConditionRuleExpression2.Appearance.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+      formatConditionRuleExpression2.Appearance.Options.UseBackColor = true;
+      formatConditionRuleExpression2.Expression = "[ServiceStatus] = \'Stopped\'";
+      gridFormatRule2.Rule = formatConditionRuleExpression2;
       gridFormatRule3.ApplyToRow = true;
-      gridFormatRule3.Column = this.colServiceStatus;
-      gridFormatRule3.Name = "FormatServiceStatusRunning";
-      formatConditionRuleExpression3.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-      formatConditionRuleExpression3.Appearance.BackColor2 = System.Drawing.Color.White;
+      gridFormatRule3.Column = this.colInfo;
+      gridFormatRule3.Name = "Format0";
+      formatConditionRuleExpression3.Appearance.BackColor = System.Drawing.Color.White;
+      formatConditionRuleExpression3.Appearance.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
       formatConditionRuleExpression3.Appearance.Options.UseBackColor = true;
-      formatConditionRuleExpression3.Expression = "[ServiceStatus] = \'Running\'";
+      formatConditionRuleExpression3.Expression = "Contains([Info], \'Ошибка\')";
       gridFormatRule3.Rule = formatConditionRuleExpression3;
-      gridFormatRule4.ApplyToRow = true;
-      gridFormatRule4.Column = this.colServiceStatus;
-      gridFormatRule4.Name = "FormatServiceStatusStopped";
-      formatConditionRuleExpression4.Appearance.BackColor = System.Drawing.Color.White;
-      formatConditionRuleExpression4.Appearance.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-      formatConditionRuleExpression4.Appearance.Options.UseBackColor = true;
-      formatConditionRuleExpression4.Expression = "[ServiceStatus] = \'Stopped\'";
-      gridFormatRule4.Rule = formatConditionRuleExpression4;
+      this.gridView1.FormatRules.Add(gridFormatRule1);
+      this.gridView1.FormatRules.Add(gridFormatRule2);
       this.gridView1.FormatRules.Add(gridFormatRule3);
-      this.gridView1.FormatRules.Add(gridFormatRule4);
       this.gridView1.GridControl = this.gridControl1;
       this.gridView1.HorzScrollVisibility = DevExpress.XtraGrid.Views.Base.ScrollVisibility.Always;
       this.gridView1.Name = "gridView1";
@@ -178,14 +199,6 @@
       this.colDatabasesSize.Visible = true;
       this.colDatabasesSize.VisibleIndex = 6;
       // 
-      // colInfo
-      // 
-      this.colInfo.FieldName = "Info";
-      this.colInfo.Name = "colInfo";
-      this.colInfo.OptionsColumn.AllowEdit = false;
-      this.colInfo.Visible = true;
-      this.colInfo.VisibleIndex = 7;
-      // 
       // colDescription
       // 
       this.colDescription.FieldName = "Description";
@@ -221,25 +234,33 @@
       // 
       this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemStart,
-            this.toolStripMenuItemStop});
+            this.toolStripMenuItemStop,
+            this.connectSMSSToolStripMenuItem});
       this.contextMenuStrip1.Name = "contextMenuStrip1";
       this.contextMenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-      this.contextMenuStrip1.Size = new System.Drawing.Size(99, 48);
+      this.contextMenuStrip1.Size = new System.Drawing.Size(152, 70);
       this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
       // 
       // toolStripMenuItemStart
       // 
       this.toolStripMenuItemStart.Name = "toolStripMenuItemStart";
-      this.toolStripMenuItemStart.Size = new System.Drawing.Size(98, 22);
+      this.toolStripMenuItemStart.Size = new System.Drawing.Size(151, 22);
       this.toolStripMenuItemStart.Text = "Start";
       this.toolStripMenuItemStart.Click += new System.EventHandler(this.toolStripMenuItemStart_Click);
       // 
       // toolStripMenuItemStop
       // 
       this.toolStripMenuItemStop.Name = "toolStripMenuItemStop";
-      this.toolStripMenuItemStop.Size = new System.Drawing.Size(98, 22);
+      this.toolStripMenuItemStop.Size = new System.Drawing.Size(151, 22);
       this.toolStripMenuItemStop.Text = "Stop";
       this.toolStripMenuItemStop.Click += new System.EventHandler(this.toolStripMenuItemStop_Click);
+      // 
+      // connectSMSSToolStripMenuItem
+      // 
+      this.connectSMSSToolStripMenuItem.Name = "connectSMSSToolStripMenuItem";
+      this.connectSMSSToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+      this.connectSMSSToolStripMenuItem.Text = "Connect SMSS";
+      this.connectSMSSToolStripMenuItem.Click += new System.EventHandler(this.connectSMSSToolStripMenuItem_Click);
       // 
       // buttonSave
       // 
@@ -254,6 +275,7 @@
       // 
       // buttonLoad
       // 
+      this.buttonLoad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.buttonLoad.Location = new System.Drawing.Point(641, 368);
       this.buttonLoad.Name = "buttonLoad";
       this.buttonLoad.Size = new System.Drawing.Size(75, 23);
@@ -264,6 +286,7 @@
       // 
       // buttonGetNetwork
       // 
+      this.buttonGetNetwork.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
       this.buttonGetNetwork.Location = new System.Drawing.Point(93, 368);
       this.buttonGetNetwork.Name = "buttonGetNetwork";
       this.buttonGetNetwork.Size = new System.Drawing.Size(133, 23);
@@ -319,6 +342,7 @@
     private DevExpress.XtraGrid.Columns.GridColumn colServiceStatus;
     private System.Windows.Forms.Button buttonLoad;
     private System.Windows.Forms.Button buttonGetNetwork;
+    private System.Windows.Forms.ToolStripMenuItem connectSMSSToolStripMenuItem;
   }
 }
 

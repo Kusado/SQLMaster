@@ -1,18 +1,17 @@
-﻿using System.Linq;
-using System.Reflection;
-using DevExpress.XtraPrinting;
+﻿using System.Diagnostics.Eventing.Reader;
 using Newtonsoft.Json;
 
 namespace Helpers {
+
   using System;
   using System.Collections;
   using System.ComponentModel;
-  using System.Runtime.InteropServices;
   using System.Net;
+  using System.Runtime.InteropServices;
 
   public class DnsMx {
-    public DnsMx() {
-    }
+
+
     [DllImport("dnsapi", EntryPoint = "DnsQuery_W", CharSet = CharSet.Unicode, SetLastError = true, ExactSpelling = true)]
     public static extern int DnsQuery([MarshalAs(UnmanagedType.VBByRefStr)]ref string pszName, QueryTypes wType, QueryOptions options, int aipServers, ref IntPtr ppQueryResults, int pReserved);
 
@@ -20,7 +19,6 @@ namespace Helpers {
     private static extern void DnsRecordListFree(IntPtr pRecordList, int FreeType);
 
     public static string[] GetMXRecords(string domain) {
-
       IntPtr ptr1 = IntPtr.Zero;
       IntPtr ptr2 = IntPtr.Zero;
       MXRecord recMx;
@@ -138,20 +136,24 @@ namespace Helpers {
   }
 
   public class NS {
+
     [Serializable]
     public class Host {
       public string FQDN { get; set; }
+
       [NonSerialized]
       public string Name;
+
       [NonSerialized]
       public string Domain;
+
       [NonSerialized]
       private IPAddress[] addresses;
 
       public override string ToString() {
         return this.FQDN;
       }
-      
+
       public static Host GetHostEntry(string NameOrIp) {
         IPHostEntry ipHostEntry;
         try {
@@ -159,7 +161,8 @@ namespace Helpers {
         }
         catch (System.Net.Sockets.SocketException socketException) {
           if (socketException.NativeErrorCode == 11001) {
-            return new Host(NameOrIp);
+            return null;
+            //return new Host(NameOrIp);
           }
           else {
             throw;
@@ -170,6 +173,7 @@ namespace Helpers {
         }
         return new Host(ipHostEntry);
       }
+
       [JsonConstructor]
       private Host(string FQDN) {
         var tmp = GetHostEntry(FQDN);
@@ -181,12 +185,21 @@ namespace Helpers {
         this.Name = tmp.Name;
         this.addresses = tmp.addresses;
       }
-      
+
       private Host(IPHostEntry ipHostEntry) {
         this.FQDN = ipHostEntry.HostName;
         this.addresses = ipHostEntry.AddressList;
-        this.Name = FQDN.Substring(0, FQDN.IndexOf("."));
-        this.Domain = this.FQDN.Remove(0, this.Name.Length + 1);
+        int index = this.FQDN.IndexOf(".", StringComparison.InvariantCulture);
+        if (index > 0) {
+          this.Name = this.FQDN.Substring(0, index);
+          this.Domain = this.FQDN.Remove(0, this.Name.Length + 1);
+        }
+        else {
+          this.Name = this.FQDN;
+          this.Domain = String.Empty;
+        }
+
+        
       }
     }
   }

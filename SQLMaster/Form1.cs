@@ -1,69 +1,84 @@
-﻿using System;
+﻿using DevExpress.XtraGrid.Views.Grid;
+using Helpers;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.NetworkInformation;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using DevExpress.Data.Db;
-using DevExpress.XtraGrid.Views.Grid;
-//using DevExpress.XtraGrid.Views.Grid;
-using Helpers;
-using Newtonsoft.Json;
 
 namespace SQLMaster {
+
   public partial class Form1 : Form {
     private List<SqlInstance> SqlServers = new List<SqlInstance>();
-    private BindingSource bs = new BindingSource();
     private Splash splash;
-    private SqlInstance SelectedInstance;
-    public Form1() {
-      InitializeComponent();
-      this.bs.DataSource = this.SqlServers;
+    private SqlInstance SelectedInstance{ get; set; }
+    private string SaveFilePath;
 
+    public Form1(string SaveFile = "Servers.json") {
+      InitializeComponent();
+      this.SaveFilePath = SaveFile;
+      
       this.gridControl1.ContextMenuStrip = this.contextMenuStrip1;
       this.gridControl1.DataSource = this.SqlServers;
     }
 
-
     private void RefreshGrid() {
-      this.bs.ResetBindings(false);
       this.gridControl1.DataSource = this.SqlServers;
       this.gridView1.RefreshData();
     }
+
     private void PopulateGridWithServers() {
-      this.Hide();
+      this.Enabled = false;
       this.splash = Splash.ShowSplash();
       this.splash.Status = "Поиск SQL серверов в локальной сети.";
-      GetSqlServersFromNetwork(true);
-      //this.SqlServers = GetSqlServersFromNetwork(Debugger.IsAttached);
+      var tmpList = GetSqlServersFromNetwork();
       this.splash.Status = "Уточнение информации об инстансах.";
-      GetSqlStatus(this.SqlServers);
+      GetSqlStatus(tmpList);
+
+      foreach (SqlInstance srv in tmpList) {
+        if (this.SqlServers.Where(x => x.Host.FQDN == srv.Host.FQDN).Any(y => y.ServiceName == srv.ServiceName)) {
+          var Element = this.SqlServers.Where(x => x.Host.FQDN == srv.Host.FQDN).First(y => y.ServiceName == srv.ServiceName);
+          string Description = Element.Description;
+          this.SqlServers.Remove(Element);
+          srv.Description = Description;
+          Element.Info = Description;
+        }
+        this.SqlServers.Add(srv);
+      }
+      var tmpList1 = LoadFromFile();
+      if (tmpList1 != null && tmpList1.Any()) {
+        foreach (SqlInstance instance in this.SqlServers) {
+          SqlInstance tmp = tmpList.Where(x => x.Host.FQDN == instance.Host.FQDN).FirstOrDefault(y => y.ServiceName == instance.ServiceName);
+          if (tmp != null) {
+            instance.Description = tmp.Description;
+          }
+        }
+      }
+
       this.splash.Status = "Инициализация формы.";
       RefreshGrid();
       this.splash.CloseSplash();
-
-
+      this.Enabled = true;
       this.Show();
       this.Focus();
       this.Activate();
     }
 
     private void Form1_Load(object sender, EventArgs e) {
-
     }
 
-    private void GetSqlServersFromNetwork(bool test = false) {
-      List<SqlInstance> sqlInstances = this.SqlServers;
+    private List<SqlInstance> GetSqlServersFromNetwork(bool test = false) {
+#if NoSearch
+      test = true;
+#endif
+      List<SqlInstance> sqlInstances = new List<SqlInstance>();
       string output;
       using (Process proc = new Process()) {
         proc.StartInfo.CreateNoWindow = true;
@@ -77,64 +92,80 @@ namespace SQLMaster {
       string[] serversStrings = output.Replace("Servers:", "").Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
       foreach (string s in serversStrings) {
         string[] server = s.Split(new string[] { "\\" }, StringSplitOptions.None);
-        if (server.Length > 1) sqlInstances.Add(new SqlInstance(server[0], server[1]));
-        else {
-          sqlInstances.Add(new SqlInstance(server[0]));
-        }
+        SqlInstance temp = (server.Length > 1 ? new SqlInstance(server[0], server[1]) : new SqlInstance(server[0]));
+        if (temp.Host != null) sqlInstances.Add(temp);
       }
+      return sqlInstances;
     }
+
     private void GetSqlStatus(List<SqlInstance> servers) {
-      ServiceController sc;
       foreach (IGrouping<string, SqlInstance> server in servers.GroupBy(x => x.Host.FQDN)) {
         var srv = server.First();
         this.splash.Status = $"Обработка сервера '{srv.Host.FQDN}'";
-        if (srv.Host.Domain?.ToLower() == "formulabi.local") {
-          if (Helpers.PingHost(srv.Host.FQDN, 500, out IPStatus status)) {
-            sc = new ServiceController();
-            sc.MachineName = srv.Host.FQDN;
+        //if (srv.Host.Domain?.ToLower() == "formulabi.local") {
+        if (Helpers.PingHost(srv.Host.FQDN, 500, out IPStatus status)) {
+          ServiceController sc = new ServiceController();
+          sc.MachineName = srv.Host.FQDN;
 
-            foreach (SqlInstance service in server) {
-              service.ServerStatus = status;
-              sc.ServiceName = service.ServiceName;
-              try {
-                service.ServiceStatus = sc.Status;
-                GetinstanceDetails(service);
-              }
-              catch (Exception e) {
-                service.Info = e.Message;
+          foreach (SqlInstance service in server) {
+            service.ServerStatus = status;
+            sc.ServiceName = service.ServiceName;
+            try {
+              service.ServiceStatus = sc.Status;
+              GetinstanceDetails(service);
+            }
+            catch (InvalidOperationException invalidOperationException) {
+              service.Info = $"Ошибка подключения: {invalidOperationException.Message}";
+              Debug.WriteLine(invalidOperationException.Message);
+              if (invalidOperationException.InnerException != null) {
+                service.Info += $": {invalidOperationException.InnerException.Message}";
+                Debug.WriteLine(invalidOperationException.InnerException.Message);
               }
             }
-          }
-          else {
-            foreach (SqlInstance service in server) {
-              service.ServerStatus = status;
+            catch (Exception e) {
+              service.Info = e.Message;
             }
           }
         }
+        else {
+          foreach (SqlInstance service in server) {
+            service.ServerStatus = status;
+          }
+        }
+        //}
       }
-      this.gridView1.RefreshData();
-      this.gridControl1.Refresh();
     }
+
     private SqlInstance GetinstanceDetails(SqlInstance service) {
       SqlInstance result = service;
 
-      string ConnectionString = (service.InstanceName == "DEFAULT") ? $@"Server={service.Host.FQDN};Trusted_Connection=True;Connection Timeout=2;" : $@"Server={service.Host.FQDN}\{service.InstanceName};Trusted_Connection=True;Connection Timeout=2;";
+      result.ConnectionString = (service.InstanceName == "DEFAULT")
+        ? $@"Server={service.Host.FQDN};Trusted_Connection=True;Connection Timeout=2;"
+        : $@"Server={service.Host.FQDN}\{service.InstanceName};Trusted_Connection=True;Connection Timeout=2;";
       service.DatabasesSize = 0;
       if (service.ServiceStatus == ServiceControllerStatus.Running) {
-        using (SqlConnection SqlConnection = new SqlConnection(ConnectionString)) {
+        using (SqlConnection SqlConnection = new SqlConnection(result.ConnectionString)) {
           try {
             SqlConnection.Open();
-            DataTable dtm = GetInstanceMemory(service, SqlConnection); DataTable dtd = GetInstanceDiskUsage(service, SqlConnection);
+            DataTable dtm = GetInstanceMemory(SqlConnection);
+            DataTable dtd = GetInstanceDiskUsage(SqlConnection);
             service.ServerMemoryMax = int.Parse(dtm.Rows[0].ItemArray[1].ToString());
             service.ServerMemoryRunning = int.Parse(dtm.Rows[0].ItemArray[2].ToString());
             foreach (DataRow row in dtd.Rows) { service.DatabasesSize += int.Parse(row.ItemArray[1].ToString()); }
           }
-          //catch (SqlException se) {
-          //  //MessageBox.Show(se.Message);
-          //  throw;
-          //}
-          catch (Exception e) {
-            service.Info = e.Message;
+          catch (SqlException sqlException) {
+            switch (sqlException.Number) {
+              case 18456:
+                service.Info = $"Ошибка авторизации: {sqlException.Message}";
+                break;
+              case -1:
+                service.Info = $"Ошибка подключения: {sqlException.Message}";
+                break;
+              default:
+                Debug.WriteLine(sqlException.Message);
+                MessageBox.Show(sqlException.Message);
+                break;
+            }
           }
         }
       }
@@ -144,8 +175,9 @@ namespace SQLMaster {
       }
       return result;
     }
-    private static DataTable GetInstanceMemory(SqlInstance service, SqlConnection SqlConnection) {
-      string query = @"SELECT name, value, value_in_use, [description] 
+
+    private static DataTable GetInstanceMemory(SqlConnection SqlConnection) {
+      string query = @"SELECT name, value, value_in_use, [description]
                       FROM sys.configurations
                       WHERE name like '%max server memory%'";
       SqlCommand command = new SqlCommand(query, SqlConnection);
@@ -153,7 +185,8 @@ namespace SQLMaster {
       dt.Load(command.ExecuteReader());
       return dt;
     }
-    private static DataTable GetInstanceDiskUsage(SqlInstance service, SqlConnection SqlConnection) {
+
+    private static DataTable GetInstanceDiskUsage(SqlConnection SqlConnection) {
       string query = @"SELECT d.name,
                 ROUND(SUM(mf.size) * 8 / 1024, 0) Size_MBs
                 FROM sys.master_files mf
@@ -165,15 +198,18 @@ namespace SQLMaster {
       dt.Load(command.ExecuteReader());
       return dt;
     }
+
     private void buttonExit_Click(object sender, EventArgs e) {
       Close();
     }
+
     private void buttonRefresh_Click(object sender, EventArgs e) {
       this.splash = Splash.ShowSplash("Обновляем инфо по серверам");
       GetSqlStatus(this.SqlServers);
       RefreshGrid();
       this.splash.CloseSplash();
     }
+
     private void Form1_Shown(object sender, EventArgs e) {
       Show();
       Focus();
@@ -211,16 +247,18 @@ namespace SQLMaster {
           .Replace("}", Environment.NewLine + "}")
           //.Replace(",", "," + Environment.NewLine)
           .Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-        System.IO.File.WriteAllLines("Servers.json", json);
+        System.IO.File.WriteAllLines(this.SaveFilePath, json);
       }
       catch (Exception exception) {
         Console.WriteLine(exception);
         throw;
       }
     }
+
     private void toolStripMenuItemStart_Click(object sender, EventArgs e) {
       StartService(this.SelectedInstance);
     }
+
     private void StopService(SqlInstance s) {
       if (s.Host.FQDN == null) return;
       var splash = Splash.ShowSplash($"Остановка сервиса {s.ServiceName} на компьютере {s.Host.FQDN}");
@@ -232,7 +270,9 @@ namespace SQLMaster {
       sc.WaitForStatus(ServiceControllerStatus.Stopped);
       s.ServiceStatus = sc.Status;
       splash.CloseSplash();
+      RefreshGrid();
     }
+
     private void StartService(SqlInstance s) {
       if (s.Host.FQDN == null) return;
       var splash = Splash.ShowSplash($"Запуск сервиса {s.ServiceName} на компьютере {s.Host.FQDN}");
@@ -244,6 +284,7 @@ namespace SQLMaster {
       sc.WaitForStatus(ServiceControllerStatus.Running);
       s.ServiceStatus = sc.Status;
       GetinstanceDetails(s);
+      RefreshGrid();
       splash.CloseSplash();
     }
 
@@ -256,29 +297,40 @@ namespace SQLMaster {
     }
 
     private void buttonLoad_Click(object sender, EventArgs e) {
-      this.SqlServers = JsonConvert.DeserializeObject<List<SqlInstance>>(File.ReadAllText("Servers.json"));
+      this.SqlServers = LoadFromFile();
       RefreshGrid();
     }
-  }
 
-  [Serializable]
-  public class SqlInstance {
-    public NS.Host Host { get; set; }
-    public IPStatus ServerStatus { get; set; }
-    public string InstanceName { get; set; }
-    public string ServiceName { get; set; }
-    public int ServerMemoryRunning { get; set; }
-    public int ServerMemoryMax { get; set; }
-    public int DatabasesSize { get; set; }
-    public string Info { get; set; }
-    public string Description { get; set; }
-    public ServiceControllerStatus ServiceStatus { get; set; }
-    public SqlInstance() { }
-    public SqlInstance(string ServerName, string InstanceName = "DEFAULT") {
-      this.Host = NS.Host.GetHostEntry(ServerName.Replace(" ", ""));
-      this.InstanceName = InstanceName;
-      this.ServiceName = this.InstanceName == "DEFAULT" ? "MSSQLSERVER" : "MSSQL$" + this.InstanceName;
+    private List<SqlInstance> LoadFromFile() {
+      if (!System.IO.File.Exists(this.SaveFilePath)) return null;
+      List<SqlInstance> result = new List<SqlInstance>();
+      try {
+        result = JsonConvert.DeserializeObject<List<SqlInstance>>(File.ReadAllText(this.SaveFilePath));
+      }
+      catch (Exception e) {
+        Console.WriteLine(e);
+        throw;
+      }
+      return result;
     }
 
+    private void connectSMSSToolStripMenuItem_Click(object sender, EventArgs e) {
+      ProcessStartInfo smss = new ProcessStartInfo();
+      smss.FileName = "ssms.exe";
+      if (this.SelectedInstance.InstanceName.ToLower() == "default") {
+        smss.Arguments = $"-E -S {this.SelectedInstance.Host} -nosplash";
+      }
+      else {
+        smss.Arguments = $"-E -S {this.SelectedInstance.Host}\\{this.SelectedInstance.InstanceName} -nosplash";
+      }
+      Process.Start(smss);
+    }
+
+    private void gridControl1_DoubleClick(object sender, EventArgs e) {
+      this.Hide();
+      InstanceDetail a = new InstanceDetail(this.SelectedInstance);
+      a.ShowDialog();
+      this.Show();
+    }
   }
 }

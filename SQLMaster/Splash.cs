@@ -35,8 +35,6 @@ namespace Helpers {
       this.label3.BackColor = Color.Transparent;
       this.label3.ForeColor = labelColor;
 
-
-
       Status = String.Empty;
     }
 
@@ -70,5 +68,6 @@ namespace Helpers {
     }
 
     private void Splash_FormClosing(object sender, FormClosingEventArgs e) {
-    }}
+    }
+  }
 }
