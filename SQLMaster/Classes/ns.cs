@@ -1,46 +1,13 @@
-﻿using System.Diagnostics.Eventing.Reader;
+﻿using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Net;
+using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 
 namespace Helpers {
-
-  using System;
-  using System.Collections;
-  using System.ComponentModel;
-  using System.Net;
-  using System.Runtime.InteropServices;
-
   public class DnsMx {
-
-
-    [DllImport("dnsapi", EntryPoint = "DnsQuery_W", CharSet = CharSet.Unicode, SetLastError = true, ExactSpelling = true)]
-    public static extern int DnsQuery([MarshalAs(UnmanagedType.VBByRefStr)]ref string pszName, QueryTypes wType, QueryOptions options, int aipServers, ref IntPtr ppQueryResults, int pReserved);
-
-    [DllImport("dnsapi", CharSet = CharSet.Auto, SetLastError = true)]
-    private static extern void DnsRecordListFree(IntPtr pRecordList, int FreeType);
-
-    public static string[] GetMXRecords(string domain) {
-      IntPtr ptr1 = IntPtr.Zero;
-      IntPtr ptr2 = IntPtr.Zero;
-      MXRecord recMx;
-      if (Environment.OSVersion.Platform != PlatformID.Win32NT) {
-        throw new NotSupportedException();
-      }
-      ArrayList list1 = new ArrayList();
-      int num1 = DnsQuery(ref domain, QueryTypes.DNS_TYPE_MX, QueryOptions.DNS_QUERY_BYPASS_CACHE, 0, ref ptr1, 0);
-      if (num1 != 0) {
-        throw new Win32Exception(num1);
-      }
-      for (ptr2 = ptr1; !ptr2.Equals(IntPtr.Zero); ptr2 = recMx.pNext) {
-        recMx = (MXRecord)Marshal.PtrToStructure(ptr2, typeof(MXRecord));
-        if (recMx.wType == 15) {
-          string text1 = Marshal.PtrToStringAuto(recMx.pNameExchange);
-          list1.Add(text1);
-        }
-      }
-      DnsRecordListFree(ptr2, 0);
-      return (string[])list1.ToArray(typeof(string));
-    }
-
     public enum QueryOptions {
       DNS_QUERY_ACCEPT_TRUNCATED_RESPONSE = 1,
       DNS_QUERY_BYPASS_CACHE = 8,
@@ -120,63 +87,64 @@ namespace Helpers {
       DNS_TYPE_ANY
     }
 
+
+    [DllImport("dnsapi", EntryPoint = "DnsQuery_W", CharSet = CharSet.Unicode, SetLastError = true, ExactSpelling = true
+    )]
+    public static extern int DnsQuery([MarshalAs(UnmanagedType.VBByRefStr)] ref string pszName, QueryTypes wType,
+                                      QueryOptions options, int aipServers, ref IntPtr ppQueryResults, int pReserved);
+
+    [DllImport("dnsapi", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern void DnsRecordListFree(IntPtr pRecordList, int FreeType);
+
+    public static string[] GetMXRecords(string domain) {
+      IntPtr ptr1 = IntPtr.Zero;
+      IntPtr ptr2 = IntPtr.Zero;
+      MXRecord recMx;
+      if (Environment.OSVersion.Platform != PlatformID.Win32NT) throw new NotSupportedException();
+
+      ArrayList list1 = new ArrayList();
+      int num1 = DnsQuery(ref domain, QueryTypes.DNS_TYPE_MX, QueryOptions.DNS_QUERY_BYPASS_CACHE, 0, ref ptr1, 0);
+      if (num1 != 0) throw new Win32Exception(num1);
+
+      for (ptr2 = ptr1; !ptr2.Equals(IntPtr.Zero); ptr2 = recMx.pNext) {
+        recMx = (MXRecord) Marshal.PtrToStructure(ptr2, typeof(MXRecord));
+        if (recMx.wType == 15) {
+          string text1 = Marshal.PtrToStringAuto(recMx.pNameExchange);
+          list1.Add(text1);
+        }
+      }
+
+      DnsRecordListFree(ptr2, 0);
+      return (string[]) list1.ToArray(typeof(string));
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     private struct MXRecord {
-      public IntPtr pNext;
-      public string pName;
-      public short wType;
-      public short wDataLength;
-      public int flags;
-      public int dwTtl;
-      public int dwReserved;
-      public IntPtr pNameExchange;
-      public short wPreference;
-      public short Pad;
+      public readonly IntPtr pNext;
+      public readonly string pName;
+      public readonly short wType;
+      public readonly short wDataLength;
+      public readonly int flags;
+      public readonly int dwTtl;
+      public readonly int dwReserved;
+      public readonly IntPtr pNameExchange;
+      public readonly short wPreference;
+      public readonly short Pad;
     }
   }
 
   public class NS {
-
     [Serializable]
     public class Host {
-      public string FQDN { get; set; }
+      [NonSerialized] private readonly IPAddress[] addresses;
 
-      [NonSerialized]
-      public string Name;
+      [NonSerialized] public string Domain;
 
-      [NonSerialized]
-      public string Domain;
-
-      [NonSerialized]
-      private IPAddress[] addresses;
-
-      public override string ToString() {
-        return this.FQDN;
-      }
-
-      public static Host GetHostEntry(string NameOrIp) {
-        IPHostEntry ipHostEntry;
-        try {
-          ipHostEntry = Dns.GetHostEntry(NameOrIp);
-        }
-        catch (System.Net.Sockets.SocketException socketException) {
-          if (socketException.NativeErrorCode == 11001) {
-            return null;
-            //return new Host(NameOrIp);
-          }
-          else {
-            throw;
-          }
-        }
-        catch (Exception e) {
-          throw e;
-        }
-        return new Host(ipHostEntry);
-      }
+      [NonSerialized] public string Name;
 
       [JsonConstructor]
       private Host(string FQDN) {
-        var tmp = GetHostEntry(FQDN);
+        Host tmp = GetHostEntry(FQDN);
         //foreach (PropertyInfo property in tmp.GetType().GetProperties(BindingFlags.DeclaredOnly)) {
         //  this.GetType().GetProperties().First(x => x.Name == property.Name)=property;
         //}
@@ -196,10 +164,29 @@ namespace Helpers {
         }
         else {
           this.Name = this.FQDN;
-          this.Domain = String.Empty;
+          this.Domain = string.Empty;
+        }
+      }
+
+      public string FQDN { get; set; }
+
+      public override string ToString() { return this.FQDN; }
+
+      public static Host GetHostEntry(string NameOrIp) {
+        IPHostEntry ipHostEntry;
+        try {
+          ipHostEntry = Dns.GetHostEntry(NameOrIp);
+        }
+        catch (SocketException socketException) {
+          if (socketException.NativeErrorCode == 11001) return null;
+
+          throw;
+        }
+        catch (Exception e) {
+          throw e;
         }
 
-        
+        return new Host(ipHostEntry);
       }
     }
   }

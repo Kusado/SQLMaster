@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace SQLMaster {
-
   internal static class Program {
-
     /// <summary>
-    /// The main entry point for the application.
+    ///   The main entry point for the application.
     /// </summary>
     [STAThread]
     private static void Main() {
@@ -18,10 +17,10 @@ namespace SQLMaster {
     }
 
     private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs e) {
-      MessageBox.Show(((Exception)e.ExceptionObject).Message);
+      MessageBox.Show(((Exception) e.ExceptionObject).Message);
     }
 
-    private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e) {
+    private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e) {
       MessageBox.Show(e.Exception.Message);
     }
   }

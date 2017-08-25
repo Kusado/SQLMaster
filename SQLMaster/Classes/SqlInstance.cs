@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.ServiceProcess;
 using Helpers;
@@ -9,8 +10,21 @@ using Helpers;
 namespace SQLMaster {
   [Serializable]
   public class SqlInstance {
+    public SqlInstance() { }
+
+    public SqlInstance(string ServerName, string InstanceName = "DEFAULT") {
+      this.Databases = new List<Database>();
+      this.Host = NS.Host.GetHostEntry(ServerName.Replace(" ", ""));
+      this.InstanceName = InstanceName;
+      this.ServiceName = this.InstanceName == "DEFAULT" ? "MSSQLSERVER" : "MSSQL$" + this.InstanceName;
+    }
+
     public string ConnectionString { get; set; }
     public NS.Host Host { get; set; }
+    public string Hostname {
+      get { return this.Host.FQDN; }
+      set { }
+    }
     public IPStatus ServerStatus { get; set; }
     public string InstanceName { get; set; }
     public string ServiceName { get; set; }
@@ -21,16 +35,9 @@ namespace SQLMaster {
     public string Description { get; set; }
     public ServiceControllerStatus ServiceStatus { get; set; }
     public List<Database> Databases { get; set; }
+    public bool AbleToConnect { get; set; }
 
-    public SqlInstance() {
-    }
-
-    public SqlInstance(string ServerName, string InstanceName = "DEFAULT") {
-      this.Databases = new List<Database>();
-      this.Host = NS.Host.GetHostEntry(ServerName.Replace(" ", ""));
-      this.InstanceName = InstanceName;
-      this.ServiceName = this.InstanceName == "DEFAULT" ? "MSSQLSERVER" : "MSSQL$" + this.InstanceName;
-    }
+    public override string ToString() { return $@"{this.Host}\{this.InstanceName}"; }
 
     public void GetDatabases(SqlConnection Connection) {
       this.Databases.Clear();
@@ -41,53 +48,27 @@ namespace SQLMaster {
       //Connection.Open();
       DataTable dt = Helpers.GetDatatable(query, Connection);
       foreach (DataRow row in dt.Rows) {
-        Database db = new Database();
-        db.Name = row[0].ToString();
-        db.CreateDate = DateTime.Parse(row[1].ToString());
-        db.state_desc = row[2].ToString();
-        db.RecoveryModel = (RecoveryModel)int.Parse(row[3].ToString());
-        db.ID = Int32.Parse(row[4].ToString());
-        db.Owner = row[5].ToString();
+        Database db = new Database {
+          Name = row[0].ToString(),
+          CreateDate = DateTime.Parse(row[1].ToString()),
+          state_desc = row[2].ToString(),
+          RecoveryModel = (RecoveryModel) int.Parse(row[3].ToString()),
+          ID = int.Parse(row[4].ToString()),
+          Owner = row[5].ToString()
+        };
         this.Databases.Add(db);
       }
     }
-    public Database GetBackupInfo(Database db, SqlConnection Connection, out bool backup, out bool log) {
-      Database result = new Database();
-      backup = log = false;
 
-      //Попробуем достать время последнего бекапа базы
-      string queryd = $" select top 1 backup_start_date, backup_finish_date from msdb..backupset" +
-                     $" where database_name = '{db.Name}'" +
-                     $" and type = 'd'" +
-                     $" order by backup_finish_date desc";
-      DataTable dtd = Helpers.GetDatatable(queryd, Connection);
-
-      if (dtd.Rows.Count == 1 &&
-          DateTime.TryParse(dtd.Rows[0][0].ToString(), out DateTime start) &&
-          DateTime.TryParse(dtd.Rows[0][1].ToString(), out DateTime finish)) {
-        result.LastBackupDate = finish;
-        result.LastBackupSpan = finish - start;
-        backup = true;
-      }
-
-      //Если база в FullMode, то попробуем достать время последнего бекапа логов
-      if (db.RecoveryModel == RecoveryModel.Full) {
-        string queryl = $" select top 1 backup_start_date, backup_finish_date from msdb..backupset" +
-                        $" where database_name = '{db.Name}'" +
-                        $" and type = 'l'" +
-                        $" order by backup_finish_date desc";
-        DataTable dtl = Helpers.GetDatatable(queryl, Connection);
-
-        if (dtl.Rows.Count == 1 &&
-          DateTime.TryParse(dtl.Rows[0][0].ToString(), out DateTime logStart) &&
-          DateTime.TryParse(dtl.Rows[0][1].ToString(), out DateTime logFinish)) {
-
-          result.LastBackupLogDate = logFinish;
-          result.LastBackupLogSpan = logFinish - logStart;
-          log = true;
-        }
-      }
-      return result;
+    public Process OpenSSMS(string database = "") {
+      ProcessStartInfo smss = new ProcessStartInfo();
+      smss.FileName = "ssms.exe";
+      string args;
+      if (this.InstanceName.ToLower() == "default") args = $"-E -S {this.Host} -nosplash";
+      else args = $"-E -S {this.Host}\\{this.InstanceName} -nosplash";
+      if (!string.IsNullOrEmpty(database)) args += $" -d {database}";
+      smss.Arguments = args;
+      return Process.Start(smss);
     }
   }
 }

@@ -50,6 +50,8 @@
       this.colLastBackupSpan = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colLastBackupLogDate = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colLastBackupLogSpan = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.openSSMSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)(this.gridControlDatabase)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.databaseBindingSource)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.gridViewDatabase)).BeginInit();
@@ -59,6 +61,7 @@
       // 
       // gridControlDatabase
       // 
+      this.gridControlDatabase.ContextMenuStrip = this.contextMenuStrip1;
       this.gridControlDatabase.DataSource = this.databaseBindingSource;
       this.gridControlDatabase.Dock = System.Windows.Forms.DockStyle.Fill;
       this.gridControlDatabase.Location = new System.Drawing.Point(0, 0);
@@ -103,9 +106,11 @@
       // contextMenuStrip1
       // 
       this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.shrinkToolStripMenuItem});
+            this.shrinkToolStripMenuItem,
+            this.refreshToolStripMenuItem,
+            this.openSSMSToolStripMenuItem});
       this.contextMenuStrip1.Name = "contextMenuStrip1";
-      this.contextMenuStrip1.Size = new System.Drawing.Size(108, 26);
+      this.contextMenuStrip1.Size = new System.Drawing.Size(153, 92);
       this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
       // 
       // shrinkToolStripMenuItem
@@ -122,12 +127,14 @@
       this.databaseToolStripMenuItem.Name = "databaseToolStripMenuItem";
       this.databaseToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.databaseToolStripMenuItem.Text = "Database";
+      this.databaseToolStripMenuItem.Click += new System.EventHandler(this.databaseToolStripMenuItem_Click);
       // 
       // logToolStripMenuItem
       // 
       this.logToolStripMenuItem.Name = "logToolStripMenuItem";
       this.logToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.logToolStripMenuItem.Text = "Log";
+      this.logToolStripMenuItem.Click += new System.EventHandler(this.logToolStripMenuItem_Click);
       // 
       // colID
       // 
@@ -135,6 +142,7 @@
       this.colID.Name = "colID";
       this.colID.Visible = true;
       this.colID.VisibleIndex = 0;
+      this.colID.Width = 39;
       // 
       // colName
       // 
@@ -142,6 +150,7 @@
       this.colName.Name = "colName";
       this.colName.Visible = true;
       this.colName.VisibleIndex = 1;
+      this.colName.Width = 95;
       // 
       // colOwner
       // 
@@ -255,19 +264,32 @@
       this.colLastBackupLogSpan.Visible = true;
       this.colLastBackupLogSpan.VisibleIndex = 17;
       // 
+      // refreshToolStripMenuItem
+      // 
+      this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
+      this.refreshToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.refreshToolStripMenuItem.Text = "Refresh";
+      this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+      // 
+      // openSSMSToolStripMenuItem
+      // 
+      this.openSSMSToolStripMenuItem.Name = "openSSMSToolStripMenuItem";
+      this.openSSMSToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.openSSMSToolStripMenuItem.Text = "Open SSMS";
+      this.openSSMSToolStripMenuItem.Click += new System.EventHandler(this.openSSMSToolStripMenuItem_Click);
+      // 
       // InstanceDetail
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(650, 366);
       this.Controls.Add(this.gridControlDatabase);
-      this.MaximizeBox = false;
-      this.MinimizeBox = false;
       this.Name = "InstanceDetail";
       this.ShowIcon = false;
       this.Text = "InstanceDetail";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.InstanceDetail_FormClosing);
       this.Load += new System.EventHandler(this.InstanceDetail_Load);
+      this.Shown += new System.EventHandler(this.InstanceDetail_Shown);
       ((System.ComponentModel.ISupportInitialize)(this.gridControlDatabase)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.databaseBindingSource)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.gridViewDatabase)).EndInit();
@@ -305,5 +327,7 @@
     private DevExpress.XtraGrid.Columns.GridColumn colLastBackupSpan;
     private DevExpress.XtraGrid.Columns.GridColumn colLastBackupLogDate;
     private DevExpress.XtraGrid.Columns.GridColumn colLastBackupLogSpan;
+    private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem openSSMSToolStripMenuItem;
   }
 }

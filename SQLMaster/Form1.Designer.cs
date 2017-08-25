@@ -28,21 +28,9 @@
       DevExpress.XtraEditors.FormatConditionRuleExpression formatConditionRuleExpression1 = new DevExpress.XtraEditors.FormatConditionRuleExpression();
       DevExpress.XtraGrid.GridFormatRule gridFormatRule2 = new DevExpress.XtraGrid.GridFormatRule();
       DevExpress.XtraEditors.FormatConditionRuleExpression formatConditionRuleExpression2 = new DevExpress.XtraEditors.FormatConditionRuleExpression();
-      DevExpress.XtraGrid.GridFormatRule gridFormatRule3 = new DevExpress.XtraGrid.GridFormatRule();
-      DevExpress.XtraEditors.FormatConditionRuleExpression formatConditionRuleExpression3 = new DevExpress.XtraEditors.FormatConditionRuleExpression();
-      this.colServiceStatus = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.colInfo = new DevExpress.XtraGrid.Columns.GridColumn();
       this.gridControl1 = new DevExpress.XtraGrid.GridControl();
       this.sqlInstanceBindingSource = new System.Windows.Forms.BindingSource(this.components);
       this.gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
-      this.colHost = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.colServerStatus = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.colInstanceName = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.colServiceName = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.colServerMemoryRunning = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.colServerMemoryMax = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.colDatabasesSize = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.colDescription = new DevExpress.XtraGrid.Columns.GridColumn();
       this.buttonExit = new System.Windows.Forms.Button();
       this.buttonRefresh = new System.Windows.Forms.Button();
       this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -52,27 +40,22 @@
       this.buttonSave = new System.Windows.Forms.Button();
       this.buttonLoad = new System.Windows.Forms.Button();
       this.buttonGetNetwork = new System.Windows.Forms.Button();
+      this.colHost = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colServerStatus = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colInstanceName = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colServiceName = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colServerMemoryRunning = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colServerMemoryMax = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colDatabasesSize = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colInfo = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colDescription = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colServiceStatus = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colAbleToConnect = new DevExpress.XtraGrid.Columns.GridColumn();
       ((System.ComponentModel.ISupportInitialize)(this.gridControl1)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.sqlInstanceBindingSource)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.gridView1)).BeginInit();
       this.contextMenuStrip1.SuspendLayout();
       this.SuspendLayout();
-      // 
-      // colServiceStatus
-      // 
-      this.colServiceStatus.FieldName = "ServiceStatus";
-      this.colServiceStatus.Name = "colServiceStatus";
-      this.colServiceStatus.OptionsColumn.AllowEdit = false;
-      this.colServiceStatus.Visible = true;
-      this.colServiceStatus.VisibleIndex = 9;
-      // 
-      // colInfo
-      // 
-      this.colInfo.FieldName = "Info";
-      this.colInfo.Name = "colInfo";
-      this.colInfo.OptionsColumn.AllowEdit = false;
-      this.colInfo.Visible = true;
-      this.colInfo.VisibleIndex = 7;
       // 
       // gridControl1
       // 
@@ -89,7 +72,6 @@
       this.gridControl1.UseEmbeddedNavigator = true;
       this.gridControl1.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridView1});
-      this.gridControl1.DoubleClick += new System.EventHandler(this.gridControl1_DoubleClick);
       // 
       // sqlInstanceBindingSource
       // 
@@ -102,109 +84,43 @@
             this.colServerStatus,
             this.colInstanceName,
             this.colServiceName,
+            this.colServiceStatus,
             this.colServerMemoryRunning,
             this.colServerMemoryMax,
             this.colDatabasesSize,
             this.colInfo,
             this.colDescription,
-            this.colServiceStatus});
+            this.colAbleToConnect});
       gridFormatRule1.ApplyToRow = true;
-      gridFormatRule1.Column = this.colServiceStatus;
-      gridFormatRule1.Name = "FormatServiceStatusRunning";
-      formatConditionRuleExpression1.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-      formatConditionRuleExpression1.Appearance.BackColor2 = System.Drawing.Color.White;
+      gridFormatRule1.Name = "Format0";
+      formatConditionRuleExpression1.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+      formatConditionRuleExpression1.Appearance.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
       formatConditionRuleExpression1.Appearance.Options.UseBackColor = true;
-      formatConditionRuleExpression1.Expression = "[ServiceStatus] = \'Running\'";
+      formatConditionRuleExpression1.Expression = "Not [AbleToConnect]";
       gridFormatRule1.Rule = formatConditionRuleExpression1;
       gridFormatRule2.ApplyToRow = true;
-      gridFormatRule2.Column = this.colServiceStatus;
-      gridFormatRule2.Name = "FormatServiceStatusStopped";
-      formatConditionRuleExpression2.Appearance.BackColor = System.Drawing.Color.White;
-      formatConditionRuleExpression2.Appearance.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+      gridFormatRule2.Name = "Format1";
+      formatConditionRuleExpression2.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+      formatConditionRuleExpression2.Appearance.BackColor2 = System.Drawing.Color.White;
       formatConditionRuleExpression2.Appearance.Options.UseBackColor = true;
-      formatConditionRuleExpression2.Expression = "[ServiceStatus] = \'Stopped\'";
+      formatConditionRuleExpression2.Expression = "[AbleToConnect]";
       gridFormatRule2.Rule = formatConditionRuleExpression2;
-      gridFormatRule3.ApplyToRow = true;
-      gridFormatRule3.Column = this.colInfo;
-      gridFormatRule3.Name = "Format0";
-      formatConditionRuleExpression3.Appearance.BackColor = System.Drawing.Color.White;
-      formatConditionRuleExpression3.Appearance.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-      formatConditionRuleExpression3.Appearance.Options.UseBackColor = true;
-      formatConditionRuleExpression3.Expression = "Contains([Info], \'Ошибка\')";
-      gridFormatRule3.Rule = formatConditionRuleExpression3;
       this.gridView1.FormatRules.Add(gridFormatRule1);
       this.gridView1.FormatRules.Add(gridFormatRule2);
-      this.gridView1.FormatRules.Add(gridFormatRule3);
       this.gridView1.GridControl = this.gridControl1;
+      this.gridView1.GroupCount = 1;
       this.gridView1.HorzScrollVisibility = DevExpress.XtraGrid.Views.Base.ScrollVisibility.Always;
       this.gridView1.Name = "gridView1";
       this.gridView1.OptionsBehavior.EditorShowMode = DevExpress.Utils.EditorShowMode.MouseDownFocused;
+      this.gridView1.OptionsDetail.EnableMasterViewMode = false;
       this.gridView1.OptionsSelection.MultiSelectMode = DevExpress.XtraGrid.Views.Grid.GridMultiSelectMode.CellSelect;
+      this.gridView1.OptionsView.ColumnAutoWidth = false;
+      this.gridView1.OptionsView.ShowAutoFilterRow = true;
+      this.gridView1.SortInfo.AddRange(new DevExpress.XtraGrid.Columns.GridColumnSortInfo[] {
+            new DevExpress.XtraGrid.Columns.GridColumnSortInfo(this.colAbleToConnect, DevExpress.Data.ColumnSortOrder.Ascending)});
       this.gridView1.VertScrollVisibility = DevExpress.XtraGrid.Views.Base.ScrollVisibility.Always;
       this.gridView1.RowCellClick += new DevExpress.XtraGrid.Views.Grid.RowCellClickEventHandler(this.gridView1_RowCellClick);
-      // 
-      // colHost
-      // 
-      this.colHost.FieldName = "Host.FQDN";
-      this.colHost.Name = "colHost";
-      this.colHost.OptionsColumn.AllowEdit = false;
-      this.colHost.Visible = true;
-      this.colHost.VisibleIndex = 0;
-      // 
-      // colServerStatus
-      // 
-      this.colServerStatus.FieldName = "ServerStatus";
-      this.colServerStatus.Name = "colServerStatus";
-      this.colServerStatus.OptionsColumn.AllowEdit = false;
-      this.colServerStatus.Visible = true;
-      this.colServerStatus.VisibleIndex = 1;
-      // 
-      // colInstanceName
-      // 
-      this.colInstanceName.FieldName = "InstanceName";
-      this.colInstanceName.Name = "colInstanceName";
-      this.colInstanceName.OptionsColumn.AllowEdit = false;
-      this.colInstanceName.Visible = true;
-      this.colInstanceName.VisibleIndex = 2;
-      // 
-      // colServiceName
-      // 
-      this.colServiceName.FieldName = "ServiceName";
-      this.colServiceName.Name = "colServiceName";
-      this.colServiceName.OptionsColumn.AllowEdit = false;
-      this.colServiceName.Visible = true;
-      this.colServiceName.VisibleIndex = 3;
-      // 
-      // colServerMemoryRunning
-      // 
-      this.colServerMemoryRunning.FieldName = "ServerMemoryRunning";
-      this.colServerMemoryRunning.Name = "colServerMemoryRunning";
-      this.colServerMemoryRunning.OptionsColumn.AllowEdit = false;
-      this.colServerMemoryRunning.Visible = true;
-      this.colServerMemoryRunning.VisibleIndex = 4;
-      // 
-      // colServerMemoryMax
-      // 
-      this.colServerMemoryMax.FieldName = "ServerMemoryMax";
-      this.colServerMemoryMax.Name = "colServerMemoryMax";
-      this.colServerMemoryMax.OptionsColumn.AllowEdit = false;
-      this.colServerMemoryMax.Visible = true;
-      this.colServerMemoryMax.VisibleIndex = 5;
-      // 
-      // colDatabasesSize
-      // 
-      this.colDatabasesSize.FieldName = "DatabasesSize";
-      this.colDatabasesSize.Name = "colDatabasesSize";
-      this.colDatabasesSize.OptionsColumn.AllowEdit = false;
-      this.colDatabasesSize.Visible = true;
-      this.colDatabasesSize.VisibleIndex = 6;
-      // 
-      // colDescription
-      // 
-      this.colDescription.FieldName = "Description";
-      this.colDescription.Name = "colDescription";
-      this.colDescription.Visible = true;
-      this.colDescription.VisibleIndex = 8;
+      this.gridView1.DoubleClick += new System.EventHandler(this.gridView1_DoubleClick);
       // 
       // buttonExit
       // 
@@ -295,6 +211,103 @@
       this.buttonGetNetwork.UseVisualStyleBackColor = true;
       this.buttonGetNetwork.Click += new System.EventHandler(this.buttonGetNetwork_Click);
       // 
+      // colHost
+      // 
+      this.colHost.FieldName = "Host.FQDN";
+      this.colHost.Name = "colHost";
+      this.colHost.OptionsColumn.AllowEdit = false;
+      this.colHost.OptionsColumn.TabStop = false;
+      this.colHost.Visible = true;
+      this.colHost.VisibleIndex = 0;
+      // 
+      // colServerStatus
+      // 
+      this.colServerStatus.FieldName = "ServerStatus";
+      this.colServerStatus.Name = "colServerStatus";
+      this.colServerStatus.OptionsColumn.AllowEdit = false;
+      this.colServerStatus.OptionsColumn.TabStop = false;
+      this.colServerStatus.Visible = true;
+      this.colServerStatus.VisibleIndex = 1;
+      // 
+      // colInstanceName
+      // 
+      this.colInstanceName.FieldName = "InstanceName";
+      this.colInstanceName.Name = "colInstanceName";
+      this.colInstanceName.OptionsColumn.AllowEdit = false;
+      this.colInstanceName.OptionsColumn.TabStop = false;
+      this.colInstanceName.Visible = true;
+      this.colInstanceName.VisibleIndex = 2;
+      // 
+      // colServiceName
+      // 
+      this.colServiceName.FieldName = "ServiceName";
+      this.colServiceName.Name = "colServiceName";
+      this.colServiceName.OptionsColumn.AllowEdit = false;
+      this.colServiceName.OptionsColumn.TabStop = false;
+      this.colServiceName.Visible = true;
+      this.colServiceName.VisibleIndex = 3;
+      // 
+      // colServerMemoryRunning
+      // 
+      this.colServerMemoryRunning.FieldName = "ServerMemoryRunning";
+      this.colServerMemoryRunning.Name = "colServerMemoryRunning";
+      this.colServerMemoryRunning.OptionsColumn.AllowEdit = false;
+      this.colServerMemoryRunning.OptionsColumn.TabStop = false;
+      this.colServerMemoryRunning.Visible = true;
+      this.colServerMemoryRunning.VisibleIndex = 4;
+      // 
+      // colServerMemoryMax
+      // 
+      this.colServerMemoryMax.FieldName = "ServerMemoryMax";
+      this.colServerMemoryMax.Name = "colServerMemoryMax";
+      this.colServerMemoryMax.OptionsColumn.AllowEdit = false;
+      this.colServerMemoryMax.OptionsColumn.TabStop = false;
+      this.colServerMemoryMax.Visible = true;
+      this.colServerMemoryMax.VisibleIndex = 5;
+      // 
+      // colDatabasesSize
+      // 
+      this.colDatabasesSize.FieldName = "DatabasesSize";
+      this.colDatabasesSize.Name = "colDatabasesSize";
+      this.colDatabasesSize.OptionsColumn.AllowEdit = false;
+      this.colDatabasesSize.OptionsColumn.TabStop = false;
+      this.colDatabasesSize.Visible = true;
+      this.colDatabasesSize.VisibleIndex = 6;
+      // 
+      // colInfo
+      // 
+      this.colInfo.FieldName = "Info";
+      this.colInfo.Name = "colInfo";
+      this.colInfo.OptionsColumn.AllowEdit = false;
+      this.colInfo.OptionsColumn.TabStop = false;
+      this.colInfo.Visible = true;
+      this.colInfo.VisibleIndex = 7;
+      // 
+      // colDescription
+      // 
+      this.colDescription.FieldName = "Description";
+      this.colDescription.Name = "colDescription";
+      this.colDescription.Visible = true;
+      this.colDescription.VisibleIndex = 8;
+      // 
+      // colServiceStatus
+      // 
+      this.colServiceStatus.FieldName = "ServiceStatus";
+      this.colServiceStatus.Name = "colServiceStatus";
+      this.colServiceStatus.OptionsColumn.AllowEdit = false;
+      this.colServiceStatus.OptionsColumn.TabStop = false;
+      this.colServiceStatus.Visible = true;
+      this.colServiceStatus.VisibleIndex = 9;
+      // 
+      // colAbleToConnect
+      // 
+      this.colAbleToConnect.FieldName = "AbleToConnect";
+      this.colAbleToConnect.Name = "colAbleToConnect";
+      this.colAbleToConnect.OptionsColumn.AllowEdit = false;
+      this.colAbleToConnect.OptionsColumn.TabStop = false;
+      this.colAbleToConnect.Visible = true;
+      this.colAbleToConnect.VisibleIndex = 10;
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -330,19 +343,20 @@
     private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemStop;
     private System.Windows.Forms.Button buttonSave;
     private System.Windows.Forms.BindingSource sqlInstanceBindingSource;
+    private System.Windows.Forms.Button buttonLoad;
+    private System.Windows.Forms.Button buttonGetNetwork;
+    private System.Windows.Forms.ToolStripMenuItem connectSMSSToolStripMenuItem;
     private DevExpress.XtraGrid.Columns.GridColumn colHost;
     private DevExpress.XtraGrid.Columns.GridColumn colServerStatus;
     private DevExpress.XtraGrid.Columns.GridColumn colInstanceName;
     private DevExpress.XtraGrid.Columns.GridColumn colServiceName;
+    private DevExpress.XtraGrid.Columns.GridColumn colServiceStatus;
     private DevExpress.XtraGrid.Columns.GridColumn colServerMemoryRunning;
     private DevExpress.XtraGrid.Columns.GridColumn colServerMemoryMax;
     private DevExpress.XtraGrid.Columns.GridColumn colDatabasesSize;
     private DevExpress.XtraGrid.Columns.GridColumn colInfo;
     private DevExpress.XtraGrid.Columns.GridColumn colDescription;
-    private DevExpress.XtraGrid.Columns.GridColumn colServiceStatus;
-    private System.Windows.Forms.Button buttonLoad;
-    private System.Windows.Forms.Button buttonGetNetwork;
-    private System.Windows.Forms.ToolStripMenuItem connectSMSSToolStripMenuItem;
+    private DevExpress.XtraGrid.Columns.GridColumn colAbleToConnect;
   }
 }
 

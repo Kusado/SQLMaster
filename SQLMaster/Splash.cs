@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Drawing;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 
 namespace Helpers {
-
   public partial class Splash : Form {
-    public Thread MyThread;
-    public bool LoadDefaults;
-    private string _status;
+    //private MainForm mainForm{ get; set; }
 
-    public string Status {
-      get { return this._status; }
-      set {
-        this._status = value;
-        if (this.Created) this.Invoke((MethodInvoker)delegate { this.label2.Text = this._status; });
-      }
-    }
+    public delegate void CloseDel();
+
+    private string _status;
+    public bool LoadDefaults;
+    public Thread MyThread;
 
     public Splash() {
       InitializeComponent();
@@ -29,18 +25,22 @@ namespace Helpers {
       this.label2.BackColor = Color.Transparent;
       this.label2.ForeColor = labelColor;
 
-      var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+      Version version = Assembly.GetExecutingAssembly().GetName().Version;
       this.label3.Text = version.ToString();
       this.label3.Parent = this.pictureBox1;
       this.label3.BackColor = Color.Transparent;
       this.label3.ForeColor = labelColor;
 
-      Status = String.Empty;
+      this.Status = string.Empty;
     }
 
-    //private MainForm mainForm{ get; set; }
-
-    public delegate void CloseDel();
+    public string Status {
+      get { return this._status; }
+      set {
+        this._status = value;
+        if (this.Created) Invoke((MethodInvoker) delegate { this.label2.Text = this._status; });
+      }
+    }
 
     public static Splash ShowSplash(string Status1 = "Загрузка...") {
       Splash s = new Splash();
@@ -48,26 +48,20 @@ namespace Helpers {
       //s.mainForm = mainForm;
       s.MyThread = new Thread(s._showSplash);
       s.MyThread.Start();
-      while (!s.Visible) {
-        Thread.Sleep(50);
-      }
+      while (!s.Visible) Thread.Sleep(50);
+
       return s;
     }
 
     private void _showSplash() {
-      this.BringToFront();
-      this.ShowDialog();
+      BringToFront();
+      ShowDialog();
     }
 
-    public void CloseSplash() {
-      this.Invoke((MethodInvoker)delegate { this.Close(); });
-    }
+    public void CloseSplash() { Invoke((MethodInvoker) delegate { Close(); }); }
 
-    private void ButtonCancel_Click(object sender, EventArgs e) {
-      this.Close();
-    }
+    private void ButtonCancel_Click(object sender, EventArgs e) { Close(); }
 
-    private void Splash_FormClosing(object sender, FormClosingEventArgs e) {
-    }
+    private void Splash_FormClosing(object sender, FormClosingEventArgs e) { }
   }
 }
