@@ -148,14 +148,14 @@ namespace Helpers {
         //foreach (PropertyInfo property in tmp.GetType().GetProperties(BindingFlags.DeclaredOnly)) {
         //  this.GetType().GetProperties().First(x => x.Name == property.Name)=property;
         //}
-        this.FQDN = tmp.FQDN;
+        this.FQDN = tmp.FQDN.ToUpper();
         this.Domain = tmp.Domain;
         this.Name = tmp.Name;
         this.addresses = tmp.addresses;
       }
 
       private Host(IPHostEntry ipHostEntry) {
-        this.FQDN = ipHostEntry.HostName;
+        this.FQDN = ipHostEntry.HostName.ToUpper();
         this.addresses = ipHostEntry.AddressList;
         int index = this.FQDN.IndexOf(".", StringComparison.InvariantCulture);
         if (index > 0) {

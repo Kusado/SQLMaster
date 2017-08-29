@@ -8,6 +8,7 @@ using Helpers;
 namespace SQLMaster {
   public partial class InstanceDetail : Form {
     private Database _selectedDatabase;
+    private List<Database> _selectedDatabases;
     private readonly SqlConnection Connection;
     private readonly SqlInstance Instance;
     private readonly Splash splash;
@@ -18,6 +19,7 @@ namespace SQLMaster {
 
       this.Instance = Instance;
       this.Instance.Databases = new List<Database>();
+      this._selectedDatabases = new List<Database>();
       this.gridControlDatabase.DataSource = this.Instance.Databases;
       this.Instance = Instance;
 
@@ -54,18 +56,29 @@ namespace SQLMaster {
     }
 
     private void contextMenuStrip1_Opening(object sender, CancelEventArgs e) {
-      this._selectedDatabase = (Database) this.gridViewDatabase.GetFocusedRow();
+      var rows = this.gridViewDatabase.GetSelectedRows();
+      this._selectedDatabases.Clear();
+      foreach (int row in rows) {
+        this._selectedDatabases.Add((Database)this.gridViewDatabase.GetRow(row));
+      }
+      this._selectedDatabase = (Database)this.gridViewDatabase.GetFocusedRow();
     }
 
     private void InstanceDetail_FormClosing(object sender, FormClosingEventArgs e) { this.Connection?.Close(); }
 
     private void databaseToolStripMenuItem_Click(object sender, EventArgs e) {
-      this._selectedDatabase.ShrinkFiles(this.Connection, true);
+      foreach (Database database in this._selectedDatabases) {
+        database.ShrinkFiles(this.Connection, log: false, db: true);
+      }
       this.gridViewDatabase.RefreshData();
     }
 
     private void logToolStripMenuItem_Click(object sender, EventArgs e) {
-      this._selectedDatabase.ShrinkFiles(this.Connection, log: true);
+
+      foreach (Database database in this._selectedDatabases) {
+        database.ShrinkFiles(this.Connection, log: true, db: false);
+      }
+
       this.gridViewDatabase.RefreshData();
     }
 
@@ -84,6 +97,10 @@ namespace SQLMaster {
 
     private void openSSMSToolStripMenuItem_Click(object sender, EventArgs e) {
       this.Instance.OpenSSMS(this._selectedDatabase.Name);
+    }
+
+    private void buttonExit_Click(object sender, EventArgs e) {
+      this.Close();
     }
   }
 }

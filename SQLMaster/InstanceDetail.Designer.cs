@@ -24,22 +24,24 @@
     /// </summary>
     private void InitializeComponent() {
       this.components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InstanceDetail));
       this.gridControlDatabase = new DevExpress.XtraGrid.GridControl();
-      this.databaseBindingSource = new System.Windows.Forms.BindingSource(this.components);
-      this.gridViewDatabase = new DevExpress.XtraGrid.Views.Grid.GridView();
-      this.unboundSource1 = new DevExpress.Data.UnboundSource(this.components);
       this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.shrinkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.databaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.openSSMSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.databaseBindingSource = new System.Windows.Forms.BindingSource(this.components);
+      this.gridViewDatabase = new DevExpress.XtraGrid.Views.Grid.GridView();
       this.colID = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colName = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colOwner = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.colFileName = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colSize = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colFiles = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colSizeFree = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colSizeFreePercent = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.colLogFileName = new DevExpress.XtraGrid.Columns.GridColumn();
+      this.colLogFiles = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colLogSize = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colLogSizeFree = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colLogSizeFreePercent = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -50,13 +52,11 @@
       this.colLastBackupSpan = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colLastBackupLogDate = new DevExpress.XtraGrid.Columns.GridColumn();
       this.colLastBackupLogSpan = new DevExpress.XtraGrid.Columns.GridColumn();
-      this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.openSSMSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.buttonExit = new System.Windows.Forms.Button();
       ((System.ComponentModel.ISupportInitialize)(this.gridControlDatabase)).BeginInit();
+      this.contextMenuStrip1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.databaseBindingSource)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.gridViewDatabase)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.unboundSource1)).BeginInit();
-      this.contextMenuStrip1.SuspendLayout();
       this.SuspendLayout();
       // 
       // gridControlDatabase
@@ -67,41 +67,10 @@
       this.gridControlDatabase.Location = new System.Drawing.Point(0, 0);
       this.gridControlDatabase.MainView = this.gridViewDatabase;
       this.gridControlDatabase.Name = "gridControlDatabase";
-      this.gridControlDatabase.Size = new System.Drawing.Size(650, 366);
+      this.gridControlDatabase.Size = new System.Drawing.Size(1096, 366);
       this.gridControlDatabase.TabIndex = 0;
       this.gridControlDatabase.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewDatabase});
-      // 
-      // databaseBindingSource
-      // 
-      this.databaseBindingSource.DataSource = typeof(SQLMaster.Database);
-      // 
-      // gridViewDatabase
-      // 
-      this.gridViewDatabase.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
-            this.colID,
-            this.colName,
-            this.colOwner,
-            this.colFileName,
-            this.colSize,
-            this.colSizeFree,
-            this.colSizeFreePercent,
-            this.colLogFileName,
-            this.colLogSize,
-            this.colLogSizeFree,
-            this.colLogSizeFreePercent,
-            this.colCreateDate,
-            this.colRecoveryModel,
-            this.colstate_desc,
-            this.colLastBackupDate,
-            this.colLastBackupSpan,
-            this.colLastBackupLogDate,
-            this.colLastBackupLogSpan});
-      this.gridViewDatabase.GridControl = this.gridControlDatabase;
-      this.gridViewDatabase.HorzScrollStep = 1;
-      this.gridViewDatabase.Name = "gridViewDatabase";
-      this.gridViewDatabase.OptionsView.ColumnAutoWidth = false;
-      this.gridViewDatabase.OptionsView.ShowGroupPanel = false;
       // 
       // contextMenuStrip1
       // 
@@ -110,7 +79,7 @@
             this.refreshToolStripMenuItem,
             this.openSSMSToolStripMenuItem});
       this.contextMenuStrip1.Name = "contextMenuStrip1";
-      this.contextMenuStrip1.Size = new System.Drawing.Size(153, 92);
+      this.contextMenuStrip1.Size = new System.Drawing.Size(136, 70);
       this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
       // 
       // shrinkToolStripMenuItem
@@ -119,7 +88,7 @@
             this.databaseToolStripMenuItem,
             this.logToolStripMenuItem});
       this.shrinkToolStripMenuItem.Name = "shrinkToolStripMenuItem";
-      this.shrinkToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.shrinkToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
       this.shrinkToolStripMenuItem.Text = "Shrink";
       // 
       // databaseToolStripMenuItem
@@ -136,13 +105,62 @@
       this.logToolStripMenuItem.Text = "Log";
       this.logToolStripMenuItem.Click += new System.EventHandler(this.logToolStripMenuItem_Click);
       // 
+      // refreshToolStripMenuItem
+      // 
+      this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
+      this.refreshToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+      this.refreshToolStripMenuItem.Text = "Refresh";
+      this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+      // 
+      // openSSMSToolStripMenuItem
+      // 
+      this.openSSMSToolStripMenuItem.Name = "openSSMSToolStripMenuItem";
+      this.openSSMSToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+      this.openSSMSToolStripMenuItem.Text = "Open SSMS";
+      this.openSSMSToolStripMenuItem.Click += new System.EventHandler(this.openSSMSToolStripMenuItem_Click);
+      // 
+      // databaseBindingSource
+      // 
+      this.databaseBindingSource.DataSource = typeof(SQLMaster.Database);
+      // 
+      // gridViewDatabase
+      // 
+      this.gridViewDatabase.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.colID,
+            this.colName,
+            this.colOwner,
+            this.colSize,
+            this.colFiles,
+            this.colSizeFree,
+            this.colSizeFreePercent,
+            this.colLogFiles,
+            this.colLogSize,
+            this.colLogSizeFree,
+            this.colLogSizeFreePercent,
+            this.colCreateDate,
+            this.colRecoveryModel,
+            this.colstate_desc,
+            this.colLastBackupDate,
+            this.colLastBackupSpan,
+            this.colLastBackupLogDate,
+            this.colLastBackupLogSpan});
+      this.gridViewDatabase.GridControl = this.gridControlDatabase;
+      this.gridViewDatabase.HorzScrollStep = 1;
+      this.gridViewDatabase.Name = "gridViewDatabase";
+      this.gridViewDatabase.OptionsBehavior.AllowAddRows = DevExpress.Utils.DefaultBoolean.False;
+      this.gridViewDatabase.OptionsBehavior.AllowDeleteRows = DevExpress.Utils.DefaultBoolean.False;
+      this.gridViewDatabase.OptionsBehavior.Editable = false;
+      this.gridViewDatabase.OptionsDetail.EnableMasterViewMode = false;
+      this.gridViewDatabase.OptionsSelection.MultiSelect = true;
+      this.gridViewDatabase.OptionsView.ColumnAutoWidth = false;
+      this.gridViewDatabase.OptionsView.ShowGroupPanel = false;
+      // 
       // colID
       // 
       this.colID.FieldName = "ID";
       this.colID.Name = "colID";
       this.colID.Visible = true;
       this.colID.VisibleIndex = 0;
-      this.colID.Width = 39;
       // 
       // colName
       // 
@@ -150,7 +168,6 @@
       this.colName.Name = "colName";
       this.colName.Visible = true;
       this.colName.VisibleIndex = 1;
-      this.colName.Width = 95;
       // 
       // colOwner
       // 
@@ -159,19 +176,20 @@
       this.colOwner.Visible = true;
       this.colOwner.VisibleIndex = 2;
       // 
-      // colFileName
-      // 
-      this.colFileName.FieldName = "FileName";
-      this.colFileName.Name = "colFileName";
-      this.colFileName.Visible = true;
-      this.colFileName.VisibleIndex = 3;
-      // 
       // colSize
       // 
       this.colSize.FieldName = "Size";
       this.colSize.Name = "colSize";
       this.colSize.Visible = true;
       this.colSize.VisibleIndex = 4;
+      // 
+      // colFiles
+      // 
+      this.colFiles.FieldName = "Files";
+      this.colFiles.Name = "colFiles";
+      this.colFiles.OptionsColumn.ReadOnly = true;
+      this.colFiles.Visible = true;
+      this.colFiles.VisibleIndex = 3;
       // 
       // colSizeFree
       // 
@@ -187,12 +205,13 @@
       this.colSizeFreePercent.Visible = true;
       this.colSizeFreePercent.VisibleIndex = 6;
       // 
-      // colLogFileName
+      // colLogFiles
       // 
-      this.colLogFileName.FieldName = "LogFileName";
-      this.colLogFileName.Name = "colLogFileName";
-      this.colLogFileName.Visible = true;
-      this.colLogFileName.VisibleIndex = 7;
+      this.colLogFiles.FieldName = "LogFiles";
+      this.colLogFiles.Name = "colLogFiles";
+      this.colLogFiles.OptionsColumn.ReadOnly = true;
+      this.colLogFiles.Visible = true;
+      this.colLogFiles.VisibleIndex = 7;
       // 
       // colLogSize
       // 
@@ -264,37 +283,38 @@
       this.colLastBackupLogSpan.Visible = true;
       this.colLastBackupLogSpan.VisibleIndex = 17;
       // 
-      // refreshToolStripMenuItem
+      // buttonExit
       // 
-      this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-      this.refreshToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-      this.refreshToolStripMenuItem.Text = "Refresh";
-      this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
-      // 
-      // openSSMSToolStripMenuItem
-      // 
-      this.openSSMSToolStripMenuItem.Name = "openSSMSToolStripMenuItem";
-      this.openSSMSToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-      this.openSSMSToolStripMenuItem.Text = "Open SSMS";
-      this.openSSMSToolStripMenuItem.Click += new System.EventHandler(this.openSSMSToolStripMenuItem_Click);
+      this.buttonExit.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+      this.buttonExit.Location = new System.Drawing.Point(-50, -50);
+      this.buttonExit.Name = "buttonExit";
+      this.buttonExit.Size = new System.Drawing.Size(75, 23);
+      this.buttonExit.TabIndex = 1;
+      this.buttonExit.TabStop = false;
+      this.buttonExit.Text = "Exit";
+      this.buttonExit.UseVisualStyleBackColor = true;
+      this.buttonExit.Click += new System.EventHandler(this.buttonExit_Click);
       // 
       // InstanceDetail
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(650, 366);
+      this.CancelButton = this.buttonExit;
+      this.ClientSize = new System.Drawing.Size(1096, 366);
+      this.Controls.Add(this.buttonExit);
       this.Controls.Add(this.gridControlDatabase);
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "InstanceDetail";
       this.ShowIcon = false;
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "InstanceDetail";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.InstanceDetail_FormClosing);
       this.Load += new System.EventHandler(this.InstanceDetail_Load);
       this.Shown += new System.EventHandler(this.InstanceDetail_Shown);
       ((System.ComponentModel.ISupportInitialize)(this.gridControlDatabase)).EndInit();
+      this.contextMenuStrip1.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.databaseBindingSource)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.gridViewDatabase)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.unboundSource1)).EndInit();
-      this.contextMenuStrip1.ResumeLayout(false);
       this.ResumeLayout(false);
 
     }
@@ -303,20 +323,21 @@
 
     private DevExpress.XtraGrid.GridControl gridControlDatabase;
     private DevExpress.XtraGrid.Views.Grid.GridView gridViewDatabase;
-    private DevExpress.Data.UnboundSource unboundSource1;
     private System.Windows.Forms.BindingSource databaseBindingSource;
     private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
     private System.Windows.Forms.ToolStripMenuItem shrinkToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem databaseToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem logToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem openSSMSToolStripMenuItem;
     private DevExpress.XtraGrid.Columns.GridColumn colID;
     private DevExpress.XtraGrid.Columns.GridColumn colName;
     private DevExpress.XtraGrid.Columns.GridColumn colOwner;
-    private DevExpress.XtraGrid.Columns.GridColumn colFileName;
     private DevExpress.XtraGrid.Columns.GridColumn colSize;
+    private DevExpress.XtraGrid.Columns.GridColumn colFiles;
     private DevExpress.XtraGrid.Columns.GridColumn colSizeFree;
     private DevExpress.XtraGrid.Columns.GridColumn colSizeFreePercent;
-    private DevExpress.XtraGrid.Columns.GridColumn colLogFileName;
+    private DevExpress.XtraGrid.Columns.GridColumn colLogFiles;
     private DevExpress.XtraGrid.Columns.GridColumn colLogSize;
     private DevExpress.XtraGrid.Columns.GridColumn colLogSizeFree;
     private DevExpress.XtraGrid.Columns.GridColumn colLogSizeFreePercent;
@@ -327,7 +348,6 @@
     private DevExpress.XtraGrid.Columns.GridColumn colLastBackupSpan;
     private DevExpress.XtraGrid.Columns.GridColumn colLastBackupLogDate;
     private DevExpress.XtraGrid.Columns.GridColumn colLastBackupLogSpan;
-    private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem openSSMSToolStripMenuItem;
+    private System.Windows.Forms.Button buttonExit;
   }
 }

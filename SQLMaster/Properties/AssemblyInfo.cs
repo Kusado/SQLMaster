@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Resources;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -35,5 +36,7 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("7.06.2730.87")]
-[assembly: AssemblyFileVersion("7.06.2730.87")]
+[assembly: AssemblyVersion("0.08.0240.121")]
+[assembly: AssemblyFileVersion("0.08.0240.121")]
+[assembly: NeutralResourcesLanguage("en")]
+

@@ -90,7 +90,7 @@ namespace SQLMaster {
         proc.StartInfo.UseShellExecute = false;
         proc.StartInfo.RedirectStandardOutput = true;
         if (!test) proc.Start();
-        output = test ? $"\r\nServers:\r\n FENIX\r\n FENIX\\EGRUL\r\n" : proc.StandardOutput.ReadToEnd();
+        output = test ? $"\r\nServers:\r\n FENIX\r\n FENIX\\EGRUL\r\n URAN\\RN\r\n" : proc.StandardOutput.ReadToEnd();
       }
       var serversStrings = output.Replace("Servers:", "")
                                  .Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);

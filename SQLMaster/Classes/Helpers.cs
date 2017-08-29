@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using System.Net.NetworkInformation;
 
 namespace SQLMaster {
-  public class Helpers {
+  public static class Helpers {
     public static bool PingHost(string nameOrAddress, int timeout = 500) {
       return PingHost(nameOrAddress, timeout, out IPStatus b);
     }
